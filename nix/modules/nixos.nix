@@ -2,7 +2,7 @@
   config,
   lib,
   pkgs,
-  self',
+  self,
   ...
 }:
 with lib; let
@@ -49,7 +49,7 @@ in {
 
     package = mkOption {
       type = package;
-      default = self'.packages.snips-sh;
+      default = self.packages.${pkgs.system}.default;
       defaultText = literalExpression "self'.packages.snips-sh";
       description = lib.mdDoc "snips-sh package to use.";
     };

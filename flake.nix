@@ -17,7 +17,7 @@
         "x86_64-linux"
       ];
 
-      flake = {self', ...}: {
+      flake = {
         nixosModules = rec {
           snips-sh = import ./nix/modules/nixos.nix;
           default = snips-sh;
