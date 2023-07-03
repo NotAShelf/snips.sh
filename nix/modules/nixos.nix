@@ -1,8 +1,7 @@
-{
+self: {
   config,
   lib,
   pkgs,
-  self,
   ...
 }:
 with lib; let
@@ -49,7 +48,7 @@ in {
 
     package = mkOption {
       type = package;
-      default = self.packages.${pkgs.system}.default;
+      default = self.packages.${pkgs.system}.snips-sh;
       defaultText = literalExpression "self'.packages.snips-sh";
       description = lib.mdDoc "snips-sh package to use.";
     };

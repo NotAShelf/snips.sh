@@ -19,7 +19,7 @@
 
       flake = {
         nixosModules = rec {
-          snips-sh = import ./nix/modules/nixos.nix;
+          snips-sh = import ./nix/modules/nixos.nix self;
           default = snips-sh;
         };
       };
