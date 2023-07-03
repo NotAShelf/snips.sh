@@ -4,6 +4,8 @@ bin/
 snips.sh
 .env
 docs/tapes/*.gif
+# nix build artifact(s)
+result/ 
 
 # Created by https://www.toptal.com/developers/gitignore/api/git,macos,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=git,macos,visualstudiocode

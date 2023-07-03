@@ -6,23 +6,42 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = inputs @ {flake-parts, ...}:
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    flake-parts,
+    ...
+  }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
         "x86_64-linux"
-        "aarch64-linux"
-        # add more systems as they are supported
       ];
+
+      flake = {self', ...}: {
+        nixosModules = rec {
+          snips-sh = import ./nix/modules/nixos.nix;
+          default = snips-sh;
+        };
+      };
+
       perSystem = {
+        inputs',
+        self',
         config,
         pkgs,
+        system,
         ...
       }: let
         inherit (pkgs) callPackage mkShell;
       in {
-        packages = rec {
-          snips-sh = callPackage ./nix/default.nix {};
-          default = snips-sh;
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
+
+        packages = {
+          snips-sh = callPackage ./nix/default.nix {inherit inputs';};
+          default = self'.packages.snips-sh;
         };
 
         devShells.default = mkShell {
@@ -39,13 +58,6 @@
 
         # provide the formatter for nix fmt
         formatter = pkgs.alejandra;
-      };
-      flake = {
-        # TODO: write nixos module
-        nixosModules = rec {
-          snips-sh = null;
-          default = snips-sh;
-        };
       };
     };
 }
