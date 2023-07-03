@@ -49,8 +49,15 @@ in {
     package = mkOption {
       type = package;
       default = self.packages.${pkgs.system}.snips-sh;
-      defaultText = literalExpression "self'.packages.snips-sh";
+      defaultText = literalExpression "self.packages.${pkgs.system}.snips-sh";
       description = lib.mdDoc "snips-sh package to use.";
+    };
+
+    stateDirectory = mkOption {
+      type = str;
+      default = "snips-sh";
+      defaultText = literalExpression "snips-sh";
+      description = lib.mdDoc "The state directory for the systemd service. Will be located in /var/lib";
     };
 
     config = mkOption {
@@ -61,7 +68,7 @@ in {
       example = literalExpression ''
         {
           SNIPS_HTTP_INTERNAL=http://0.0.0.0:8080
-          ENV SNIPS_SSH_INTERNAL=ssh://0.0.0.0:2222
+          SNIPS_SSH_INTERNAL=ssh://0.0.0.0:2222
         }
       '';
       description = lib.mdDoc ''
@@ -124,11 +131,15 @@ in {
         ProtectHome = "true";
         ProtectSystem = "strict";
         AmbientCapabilities = "CAP_NET_BIND_SERVICE";
-        StateDirectory = "snips-sh";
+        StateDirectory = "${cfg.stateDirectory}";
+        WorkingDirectory = "/var/lib/${cfg.stateDirectory}";
         StateDirectoryMode = "0700";
         Restart = "always";
       };
       wantedBy = ["multi-user.target"];
     };
+    systemd.tmpfiles.rules = [
+      "D /var/lib/${cfg.stateDirectory}/data 755 ${user} ${group} - -"
+    ];
   };
 }
